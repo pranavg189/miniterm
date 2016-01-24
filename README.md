@@ -6,7 +6,11 @@ It is a very basic linux terminal which uses UNIX terminal API(termios.h) for te
 
 Compile the miniterm.c with the command:
 
-gcc `pkg-config --cflags --libs gtk+-2.0 gtksourceview-2.0` main.c -o miniterm
+``gcc `pkg-config --cflags --libs gtk+-2.0 gtksourceview-2.0` miniterm.c -o miniterm``
+
+To Execute , run :
+
+`./miniterm`
 
 V 1.0 - created a basic terminal
 
