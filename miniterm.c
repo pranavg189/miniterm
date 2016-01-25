@@ -161,3 +161,21 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+void gtk_text_buffer_append_output(GtkTextBuffer *buffer, char *text, int len)
+{
+	gtk_text_buffer_insert_at_cursor(buffer, text, len);
+	GtkTextIter iter;
+	gtk_text_buffer_get_iter_at_mark(buffer, &iter, gtk_text_buffer_get_insert(buffer));
+	min_cursor_offset = gtk_text_iter_get_offset(&iter);
+}
+
+gboolean read_masterFd(GIOChannel *channel, GIOCondition condition, gpointer data)
+{
+	memset(&buf,0,sizeof(buf));
+	numRead = read(masterFd, buf, BUF_SIZE);
+	buf[numRead] = '\0';
+	printf("RECEIVING FROM OTY %s\n",buf);
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtInput));
+	gtk_text_buffer_append_output(buffer, buf, -1);
+}
+
