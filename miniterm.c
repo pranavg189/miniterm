@@ -115,7 +115,49 @@ static void ttyReset(void)
 	if(tcsetattr(STDIN_FILENO), TCSANOW, &ttyOrig) == -1);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+	tcgetattr(STDIN_FILENO, &ttyOrig);
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &ws);
+	childPid = ptyFork(&masterFd, slaveName, MAX_SNAME, &ttyOrig, &ws);
+	if(childPid == 0)
+	{
+		shell = "/bin/bash";
+		execlp(shell, shell, (char*) NULL);
+	}
+	atexit(ttyReset);
+
+	/* gtk code start */
+	
+	GtkSourceBuffer *buffer;
+	GtkWidget *scrollwin;
+
+	gtk_init(&argc, &argv);
+
+	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	buffer = gtk_source_buffer_new(NULL);
+	txtInput = gtk_source_view_new_with_buffer(buffer);
+	gtk_text_buffer_append_output(GTK_TEXT_BUFFER(buffer),buf,-1);
+	srollwin = gtk_scrolled_window_new(NULL,NULL);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollwin),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+	gtk_container_add(GTK_CONTAINER(scrollwin), txtInput);
+
+	GIOChannel *masterFd_channel = g_io_channel_unix_new(masterFd);
+	g_io_add_watch(masterFd_channel, G_IO_IN, (GIOFunc)read_masterFd, NULL);
+
+	gtk_container_add(GTK_CONTAINER(window),scrollwin);
+	gtk_widget_set_size_request(window, 600, 400);
+	gtk_window_set_title(GTK_WINDOW(window), "Terminal");
+
+	g_signal_connect(G_OBJECT(txtInput),"key-press-event",G_CALLBACK(txtinput_key_press_event),NULL);
+	g_signal_connect(G_OBJECT(window),"destroy",G_CALLBACK(destroy), NULL);
+	g_signal_connect(G_OBJECT(window),"delete_event", G_CALLBACK(delete_event), NULL);
+
+	gtk_widget_show_all(window);
+
+	gtk_main();  /* gtk event loop */
+
+	/* gtk code end */
 	return 0;
 }
+
