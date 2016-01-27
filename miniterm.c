@@ -112,7 +112,7 @@ pid_t ptyFork(int *masterFd, char *slaveName, size_t snLen, struct termios *slav
 
 static void ttyReset(void)
 {
-	if(tcsetattr(STDIN_FILENO), TCSANOW, &ttyOrig) == -1);
+	if(tcsetattr(STDIN_FILENO, TCSANOW, &ttyOrig) == -1);
 }
 
 int main(int argc, char *argv[])
@@ -221,3 +221,12 @@ static gboolean txtinput_key_press_event(GtkWidget *widgt, GdkEventKey *event)
 	return TRUE;
 }
 
+void destroy(GtkWidget *window)
+{
+	gtk_main_quit();
+}
+
+gboolean delete_event(GtkWidget *window, GdkEvent *event)
+{
+	return FALSE;
+}
