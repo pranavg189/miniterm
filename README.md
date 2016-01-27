@@ -12,6 +12,7 @@ To Execute , run :
 
 `./miniterm`
 
+Changelog:
+
 V 1.0 - created a basic terminal
 
-Known issues
