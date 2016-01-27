@@ -2,6 +2,8 @@
 
 A Minimal Linux Terminal 
 
+![Screenshot](https://github.com/pranavg189/miniterm/blob/master/miniterm-screenshot.png)
+
 It is a very basic linux terminal which uses UNIX terminal API(termios.h) for terminal functionality and GTK+ for drawing the UI.
 
 Compile the miniterm.c with the command:
