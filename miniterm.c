@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 	buffer = gtk_source_buffer_new(NULL);
 	txtInput = gtk_source_view_new_with_buffer(buffer);
 	gtk_text_buffer_append_output(GTK_TEXT_BUFFER(buffer),buf,-1);
-	srollwin = gtk_scrolled_window_new(NULL,NULL);
+	scrollwin = gtk_scrolled_window_new(NULL,NULL);
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollwin),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(scrollwin), txtInput);
 
@@ -179,7 +179,7 @@ gboolean read_masterFd(GIOChannel *channel, GIOCondition condition, gpointer dat
 	gtk_text_buffer_append_output(buffer, buf, -1);
 }
 
-static gboolean txtinput_key_press_event(GtkWidget *widgt, GdkEventKey *event)
+static gboolean txtinput_key_press_event(GtkWidget *widget, GdkEventKey *event)
 {
 	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
 	GtkTextIter current_iter,start_iter;
