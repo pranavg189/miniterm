@@ -179,3 +179,45 @@ gboolean read_masterFd(GIOChannel *channel, GIOCondition condition, gpointer dat
 	gtk_text_buffer_append_output(buffer, buf, -1);
 }
 
+static gboolean txtinput_key_press_event(GtkWidget *widgt, GdkEventKey *event)
+{
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
+	GtkTextIter current_iter,start_iter;
+	gtk_text_buffer_get_iter_at_mark(buffer, &current_iter,gtk_text_buffer_get_insert(buffer));
+	int current_offset = gtk_text_iter_get_offset(&current_iter);
+	if(current_offset<min_cursor_offset)
+		return TRUE;
+	gtk_text_buffer_get_iter_at_offset(buffer,&start_iter,min_cursor_offset);
+	char *text,*text2;
+	asprintf(&text2,"");
+	switch(event->keyval)
+	{
+		case 65293:  // code for Return key
+		printf("getting text\n");
+		text = gtk_text_buffer_get_text(buffer, &start_iter, &current_iter, FALSE);
+		asprintf(&text2, "%s\n", text);
+		if(strcmp(text2, "\n") == 0)
+		{
+			GtkTextIter start_line_iter;
+			gtk_text_buffer_get_iter_at_line(buffer, &start_line_iter, gtk_text_iter_get_line_index(&current_iter));
+			text = gtk_text_buffer_get_text(buffer, &start_line_iter,&current_iter, FALSE);
+			if(strcmp(text, "sh-4.2$")==0)
+				return TRUE;
+		}
+		gtk_text_buffer_insert_at_cursor(buffer, "\n", -1);
+		break;
+
+		case 65288: // for Backspace key
+		if(current_offset == min_cursor_offset)
+			return TRUE;
+		break;
+	}
+
+	if(strcmp(text2, "")==0)
+		return FALSE;
+	printf("SENDING TO PTY %s \n, text2");
+	write(masterFd, text2, strlen(text2));
+	free(text2);
+	return TRUE;
+}
+
